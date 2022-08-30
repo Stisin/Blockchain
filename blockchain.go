@@ -16,6 +16,9 @@ type Block struct {
 	PrevHash  string
 }
 
+// Переменная, содержащая блокчейн
+var Blockchain []Block
+
 // Берет данные Block(прошлого блока) и создает для них новый хэш SHA256
 func calculateHash(block Block) string {
 	record := strconv.Itoa(block.Index) + block.Timestamp + strconv.Itoa(block.BPM) + block.PrevHash // Объединение в одну строку данных из прошлого блока
@@ -53,9 +56,8 @@ func isBlockValid(newBlock, oldBlock Block) bool {
 	return true
 }
 
-// Переменная, содержащая блокчейн
-var Blockchain []Block
-
-func main() {
-
+func replaceChain(newBlocks []Block) {
+	if len(newBlocks) > len(Blockchain) {
+		Blockchain = newBlocks
+	}
 }
