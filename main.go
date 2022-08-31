@@ -4,12 +4,17 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
 
 func main() {
+	router := mux.NewRouter()
+	router.HandleFunc("/", getBlockchainHandler).Methods("GET")
+	router.HandleFunc("/", writeBlockHandler).Methods("POST")
+
 	err := godotenv.Load("serverconf.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
@@ -17,9 +22,15 @@ func main() {
 	httpPort := ":" + os.Getenv("PORT")
 	log.Println("Listening on ", httpPort)
 
-	http.ListenAndServe(httpPort, nil)
+	server := &http.Server{
+		Addr:           httpPort,
+		Handler:        router,
+		ReadTimeout:    10 * time.Second,
+		WriteTimeout:   10 * time.Second,
+		MaxHeaderBytes: 1 << 20,
+	}
 
-	router := mux.NewRouter()
-	router.HandleFunc("/", getBlockchainHandler).Methods("GET")
-	router.HandleFunc("/", writeBlockHandler).Methods("POST")
+	if err := server.ListenAndServe(); err != nil {
+		log.Fatal(err)
+	}
 }
