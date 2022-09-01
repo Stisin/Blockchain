@@ -6,19 +6,21 @@ import (
 	"os"
 	"time"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc("/", getBlockchainHandler).Methods("GET")
-	router.HandleFunc("/", writeBlockHandler).Methods("POST")
+	router.HandleFunc("/", GetBlockchainHandler).Methods("GET")
+	router.HandleFunc("/", WriteBlockHandler).Methods("POST")
 
 	err := godotenv.Load("serverconf.env")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
+
 	httpPort := ":" + os.Getenv("PORT")
 	log.Println("Listening on ", httpPort)
 
@@ -33,4 +35,12 @@ func main() {
 	if err := server.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
+
+	go func() {
+		t := time.Now()
+		genesisBlock := Block{0, t.String(), 0, "", ""}
+		spew.Dump(genesisBlock)
+		Blockchain = append(Blockchain, genesisBlock)
+	}()
+
 }
