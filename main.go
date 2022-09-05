@@ -16,7 +16,7 @@ func main() {
 	router.HandleFunc("/", GetBlockchainHandler).Methods("GET")
 	router.HandleFunc("/", WriteBlockHandler).Methods("POST")
 
-	err := godotenv.Load("serverconf.env")
+	err := godotenv.Load("serverconf")
 	if err != nil {
 		log.Fatal("Error loading .env file")
 	}
